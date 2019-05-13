@@ -1,7 +1,7 @@
 # @Author: utkuglsvn <glsvn>
 # @Date:   2019-05-12T13:56:37+03:00
 # @Last modified by:   glsvn
-# @Last modified time: 2019-05-13T21:38:53+03:00
+# @Last modified time: 2019-05-14T00:44:26+03:00
 import pyrebase
 
 
@@ -19,18 +19,16 @@ firebaseConfig = {
 firebase=pyrebase.initialize_app(firebaseConfig)
 storage=firebase.storage()
 
+storage.child("images/plantImg").download("downloaded.jpg")
 
-storage.child("images/69221").download("downloaded.jpg")
-
-db=firebase.database()
-results = db.child("images").get()
+db=firebase.database().child("results")
 
 import numpy as np
 from keras.preprocessing import image
 from skimage.io import imread
 from skimage.transform import resize
 from keras.models import load_model
-classifier = load_model('leaf_model_last.h5')
+classifier = load_model('model/leaf_model_last.h5')
 
 img = imread('downloaded.jpg')
 img = resize(img,(128,128))
@@ -40,8 +38,8 @@ if(np.max(img)>1):
 prediction = classifier.predict_classes(img)
 print (prediction)
 if(prediction):
-    db.child("results").push("saglikli")
+    db.set("saglikli")
     print ("Saglikli")
 else:
-    db.child("results").push("hasta")
+    db.set("hasta")
     print ("Hasta")
